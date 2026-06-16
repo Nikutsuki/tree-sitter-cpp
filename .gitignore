@@ -38,3 +38,7 @@ dist/
 *.tar.gz
 *.tgz
 *.zip
+
+# Zig artifacts
+zig-out/
+.zig-cache/
