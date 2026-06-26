@@ -44,4 +44,24 @@ pub fn build(b: *std.Build) void {
         .install_subdir = "queries",
         .include_extensions = &.{"scm"},
     });
+
+    const module = b.addModule(library_name, .{
+        .root_source_file = b.path("bindings/zig/root.zig"),
+        .target = target,
+        .optimize = optimize,
+    });
+    module.linkLibrary(lib);
+
+    const tests = b.addTest(.{
+        .root_module = b.createModule(.{
+            .root_source_file = b.path("bindings/zig/test.zig"),
+            .target = target,
+            .optimize = optimize,
+        }),
+    });
+    tests.root_module.addImport(library_name, module);
+
+    const run_tests = b.addRunArtifact(tests);
+    const test_step = b.step("test", "Run unit tests");
+    test_step.dependOn(&run_tests.step);
 }
